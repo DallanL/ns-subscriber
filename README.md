@@ -119,6 +119,8 @@ To make the "Subscriptions" tab appear in your PBX portal, you must inject the J
 
 ## Usage
 
+**NOTE**: I recommend you only create and manage subscriptions when masq'd as an office manager user as subscription ownership and visibility can be very unintuitive, and you will need the actual portal username and password of that user the first time you create a subscription.
+
 1.  **Log in to the Portal:** Log in as a User or Office Manager.
 2.  **Navigate:** Go to the **Phone Numbers** (or Inventory) tab.
 3.  **Subscriptions Tab:** You should see a new tab labeled **Subscriptions**.
