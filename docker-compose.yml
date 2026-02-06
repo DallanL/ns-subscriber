@@ -1,0 +1,92 @@
+services:
+  ns-app:
+    build: .
+    container_name: ns-subscriber-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=${DEBUG:-false}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - LOG_FORMAT=${LOG_FORMAT}
+      - PUBLIC_API_URL=${PUBLIC_API_URL}
+      - DATABASE_URL=${DATABASE_URL}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - NS_CLIENT_ID=${NS_CLIENT_ID}
+      - NS_CLIENT_SECRET=${NS_CLIENT_SECRET}
+      - NS_API_URL=${NS_API_URL}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+      - SUBSCRIPTION_DURATION_DAYS=${SUBSCRIPTION_DURATION_DAYS:-7}
+      - SUBSCRIPTION_RENEWAL_WINDOW_HOURS=${SUBSCRIPTION_RENEWAL_WINDOW_HOURS:-24}
+      - NS_API_MAX_REQUESTS_PER_SECOND=${NS_API_MAX_REQUESTS_PER_SECOND:-5.0}
+    networks:
+      - app_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ns-subscriber.rule=Host(`${SERVICE_DOMAIN}`)"
+      - "traefik.http.routers.ns-subscriber.entrypoints=websecure"
+      - "traefik.http.routers.ns-subscriber.tls.certresolver=letsencrypt"
+      - "traefik.http.services.ns-subscriber.loadbalancer.server.port=8000"
+
+  maintenance:
+    build: .
+    container_name: ns-subscriber-maintenance
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DEBUG=${DEBUG:-false}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - LOG_FORMAT=${LOG_FORMAT}
+      - DATABASE_URL=${DATABASE_URL}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - NS_CLIENT_ID=${NS_CLIENT_ID}
+      - NS_CLIENT_SECRET=${NS_CLIENT_SECRET}
+      - NS_API_URL=${NS_API_URL}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+      - SUBSCRIPTION_DURATION_DAYS=${SUBSCRIPTION_DURATION_DAYS:-7}
+      - SUBSCRIPTION_RENEWAL_WINDOW_HOURS=${SUBSCRIPTION_RENEWAL_WINDOW_HOURS:-24}
+      - NS_API_MAX_REQUESTS_PER_SECOND=${NS_API_MAX_REQUESTS_PER_SECOND:-5.0}
+    networks:
+      - app_network
+    command: >
+      sh -c "while true; do
+        echo 'Running maintenance...';
+        python maintenance.py;
+        echo 'Sleeping for 15 minutes...';
+        sleep 900;
+      done"
+
+  db:
+    image: postgres:15-alpine
+    container_name: ns-subscriber-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-ns_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-ns_password}
+      - POSTGRES_DB=${POSTGRES_DB:-ns_subscriber}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ns_user} -d ${POSTGRES_DB:-ns_subscriber}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  app_network:
+    external: true
+    name: ${DOCKER_NETWORK}
+
+volumes:
+  db_data:

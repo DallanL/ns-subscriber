@@ -1,0 +1,43 @@
+<div class="row-fluid">
+    <div class="span12">
+        <div class="well well-small" style="background: #fff; border: 1px solid #ddd;">
+            <div class="row-fluid">
+                <div class="span8">
+                    <h4><i class="icon-refresh"></i> Subscription Registry</h4>
+                    <p class="muted">Manage and monitor event subscriptions for <strong>{{ user.domain }}</strong> / <strong>{{ user.user }}</strong></p>
+                </div>
+                <div class="span4 text-right" style="text-align: right;">
+                    <button class="btn btn-primary btn-small" id="btn_new_subscription">
+                        <i class="icon-plus icon-white"></i> New Subscription
+                    </button>
+                    <button class="btn btn-small" id="btn_refresh_subscriptions">
+                        <i class="icon-repeat"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <hr style="margin: 10px 0;">
+
+            <div id="subscription_content_area">
+                <!-- Loading State (Default) -->
+                <div style="padding: 40px; text-align: center; color: #999;">
+                    <i class="fa fa-spinner fa-spin fa-2x fa-fw"></i>
+                    <div style="margin-top: 10px;">Fetching subscription records...</div>
+                </div>
+            </div>
+            
+            <div id="subscription_footer" style="margin-top: 20px;">
+                <span class="label label-info">v{{ version }}</span>
+                <span class="pull-right muted" style="font-size: 0.9em;">
+                    Identity Resolved: <span class="text-info">{{ user.name_first_name }} {{ user.name_last_name }}</span>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Local script for the fragment if needed, 
+    // though most logic stays in portal_injection.js
+    console.log("Subscription UI Skeleton Loaded");
+</script>

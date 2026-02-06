@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+httpx
+pydantic>=2.0
+pydantic-settings
+pytest
+pytest-asyncio
+python-dotenv
+jinja2
+asyncpg
+sqlalchemy[asyncio]
+alembic
+cryptography

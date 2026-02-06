@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Authentication Successful</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+        .success { color: green; font-size: 20px; }
+    </style>
+</head>
+<body>
+    <div class="success">
+        Authentication Successful!
+    </div>
+    <p>You have successfully connected user <strong>{{ user }}</strong> @ <strong>{{ domain }}</strong>.</p>
+    <p>This window will close automatically.</p>
+    <script>
+        // Notify parent window if possible
+        if (window.opener) {
+            window.opener.postMessage("ns_auth_success", "*");
+        }
+        setTimeout(function() {
+            window.close();
+        }, 2000);
+    </script>
+</body>
+</html>
